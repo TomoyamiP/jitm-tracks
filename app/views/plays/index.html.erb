@@ -1,0 +1,21 @@
+<h1>Recent Plays</h1>
+<table>
+  <thead>
+    <tr>
+      <th>Time</th>
+      <th>Song</th>
+      <th>Artist</th>
+      <th>Album</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @plays.each do |play| %>
+      <tr>
+        <td><%= play.played_at.strftime("%Y-%m-%d %H:%M") %></td>
+        <td><%= play.song %></td>
+        <td><%= play.artist %></td>
+        <td><%= play.album %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
