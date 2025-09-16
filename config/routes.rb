@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  get 'morning/index'
   get 'plays/index'
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
@@ -10,4 +11,5 @@ Rails.application.routes.draw do
   # root "posts#index"
   resources :plays, only: [:index]
   root "plays#index"
+  get "morning", to: "morning#index"
 end

@@ -1,0 +1,31 @@
+<div class="morning">
+  <h1>The Morning Show — Recent Plays</h1>
+  <div class="meta">
+    Showing <%= @plays.size %> plays • Last updated <%= Time.current.strftime('%Y-%m-%d %H:%M') %>
+  </div>
+  <% if @plays.present? %>
+    <table>
+      <thead>
+        <tr>
+          <th>Time (PT)</th>
+          <th>Artist</th>
+          <th>Song</th>
+          <th>Album</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @plays.each do |p| %>
+          <tr>
+            <td><%= p.played_at&.in_time_zone('Pacific Time (US & Canada)')&.strftime('%Y-%m-%d %H:%M') %></td>
+            <td><%= p.artist %></td>
+            <td><%= p.song %></td>
+            <td><%= p.album %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <p>No Morning Show plays found yet. Try:</p>
+    <pre>bin/rails kexp:import_morning</pre>
+  <% end %>
+</div>
