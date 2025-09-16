@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  kexp_show_id: 1
+  uri: MyString
+  program_name: MyString
+  host_names: MyText
+  airdate: 2025-09-16 21:59:17
+
+two:
+  kexp_show_id: 1
+  uri: MyString
+  program_name: MyString
+  host_names: MyText
+  airdate: 2025-09-16 21:59:17
