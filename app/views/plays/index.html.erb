@@ -1,4 +1,15 @@
-<h1>Recent Plays</h1>
+<h1>Recent Plays — <%= @program %></h1>
+<% if @plays.empty? %>
+  <p>No plays found for "<%= @program %>".</p>
+  <% if @available_programs.any? %>
+    <p>Available programs in your DB right now:</p>
+    <ul>
+      <% @available_programs.each do |pname| %>
+        <li><a href="<%= plays_path(program: pname) %>"><%= pname %></a></li>
+      <% end %>
+    </ul>
+  <% end %>
+<% end %>
 <table>
   <thead>
     <tr>
