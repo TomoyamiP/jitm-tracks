@@ -17,9 +17,12 @@ class KexpClient
 
       show = Show.find_or_create_by!(kexp_show_id: show_id) do |s|
         s.uri          = play["show_uri"]
-        s.program_name = play["program_name"] if play["program_name"]
-        s.host_names   = Array(play["host_names"]).join(", ") if play["host_names"]
-        s.airdate      = play["airdate"] if play["airdate"]
+        details        = fetch_show(play["show_uri"])
+        if details
+          s.program_name = details["program_name"]
+          s.host_names   = Array(details["host_names"]).join(", ")
+          s.airdate      = details["start_time"]
+        end
       end if show_id
 
       Play.find_or_create_by!(kexp_play_id: play["id"]) do |p|
@@ -33,5 +36,11 @@ class KexpClient
         p.show          = show if show
       end
     end
+  end
+
+  def fetch_show(show_uri)
+    return nil unless show_uri
+    response = self.class.get(show_uri) # use full URL
+    response.parsed_response
   end
 end
