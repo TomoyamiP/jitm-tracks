@@ -67,3 +67,6 @@ group :test do
 end
 
 gem "httparty", "~> 0.23.1"
+
+gem "ostruct"
+gem "sassc-rails"

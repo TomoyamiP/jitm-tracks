@@ -1,0 +1,23 @@
+.morning h1 { margin-bottom: 0.5rem; }
+.morning .meta { color: #666; margin-bottom: 1rem; font-size: 0.9rem; }
+.morning table { width: 100%; border-collapse: collapse; }
+.morning th, .morning td { padding: 0.5rem; border-bottom: 1px solid #ddd; }
+.morning tr:hover { background: #fafafa; }
+.morning th { text-align: left; }
+
+nav {
+  background: #f5f5f5;   /* light gray bar */
+  padding: 10px;
+
+  a {
+    color: #333;          /* dark text */
+    font-weight: bold;
+    text-decoration: none;
+    margin-right: 15px;
+
+    &:hover {
+      color: #007acc;     /* blue on hover */
+      text-decoration: underline;
+    }
+  }
+}
