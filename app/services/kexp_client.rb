@@ -12,6 +12,16 @@ class KexpClient
 
   def import_recent_plays(limit: 20)
     fetch_recent_plays(limit: limit).each do |play|
+      # Get show_id from the URI (last number in the URL)
+      show_id = play["show_uri"]&.split("/")&.last&.to_i
+
+      show = Show.find_or_create_by!(kexp_show_id: show_id) do |s|
+        s.uri          = play["show_uri"]
+        s.program_name = play["program_name"] if play["program_name"]
+        s.host_names   = Array(play["host_names"]).join(", ") if play["host_names"]
+        s.airdate      = play["airdate"] if play["airdate"]
+      end if show_id
+
       Play.find_or_create_by!(kexp_play_id: play["id"]) do |p|
         p.song          = play["song"]
         p.artist        = play["artist"]
@@ -20,9 +30,7 @@ class KexpClient
         p.played_at     = play["airdate"]
         p.thumbnail_uri = play["thumbnail_uri"]
         p.show_uri      = play["show_uri"]
-        # These fields might be absent in /plays/ — handle nils safely:
-        p.program_name  = play["program_name"] if play["program_name"]
-        p.host_names    = Array(play["host_names"]).join(", ") if play["host_names"]
+        p.show          = show if show
       end
     end
   end
