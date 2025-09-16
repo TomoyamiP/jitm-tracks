@@ -1,0 +1,25 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  song: MyString
+  artist: MyString
+  album: MyString
+  play_type: MyString
+  played_at: 2025-09-16 21:06:56
+  kexp_play_id: 1
+  thumbnail_uri: MyString
+  show_uri: MyString
+  program_name: MyString
+  host_names: MyText
+
+two:
+  song: MyString
+  artist: MyString
+  album: MyString
+  play_type: MyString
+  played_at: 2025-09-16 21:06:56
+  kexp_play_id: 1
+  thumbnail_uri: MyString
+  show_uri: MyString
+  program_name: MyString
+  host_names: MyText
