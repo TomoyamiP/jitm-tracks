@@ -1,6 +1,9 @@
 class MorningController < ApplicationController
   def index
-    @plays = Play.for_program("The Morning Show").order(played_at: :desc).limit(200)
+    @plays = Play.for_program("The Morning Show")
+                 .within_show_window
+                 .order(played_at: :desc)
+                 .limit(200)
   end
 
   def refresh
