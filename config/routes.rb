@@ -1,15 +1,19 @@
 Rails.application.routes.draw do
-  get 'morning/index'
-  get 'plays/index'
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+  # Plays
+  resources :plays, only: [:index]
+  get 'plays/index' # optional, but can be removed since resources :plays covers it
 
-  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
-  # Can be used by load balancers and uptime monitors to verify that the app is live.
+  # Health check
   get "up" => "rails/health#show", as: :rails_health_check
 
-  # Defines the root path route ("/")
-  # root "posts#index"
-  resources :plays, only: [:index]
+  # Morning routes (index + refresh + backfill)
+  resources :morning, only: [:index] do
+    collection do
+      post :refresh
+      post :backfill
+    end
+  end
+
+  # Root path
   root "plays#index"
-  get "morning", to: "morning#index"
 end

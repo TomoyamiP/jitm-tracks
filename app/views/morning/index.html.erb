@@ -3,27 +3,39 @@
   <div class="meta">
     Showing <%= @plays.size %> plays • Last updated <%= Time.current.strftime('%Y-%m-%d %H:%M') %>
   </div>
+  <div class="actions">
+    <%= button_to "Refresh Today", refresh_morning_index_path, method: :post, class: "btn" %>
+    <%= button_to "Backfill Last 30 Days", backfill_morning_index_path, method: :post, class: "btn btn-danger" %>
+  </div>
+  <% if notice %>
+    <p class="notice"><%= notice %></p>
+  <% end %>
+  <% if alert %>
+    <p class="alert"><%= alert %></p>
+  <% end %>
   <% if @plays.present? %>
-    <table>
-      <thead>
-        <tr>
-          <th>Time (PT)</th>
-          <th>Artist</th>
-          <th>Song</th>
-          <th>Album</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @plays.each do |p| %>
+    <div class="table-wrap">
+      <table>
+        <thead>
           <tr>
-            <td><%= p.played_at&.in_time_zone('Pacific Time (US & Canada)')&.strftime('%Y-%m-%d %H:%M') %></td>
-            <td><%= p.artist %></td>
-            <td><%= p.song %></td>
-            <td><%= p.album %></td>
+            <th>Time (PT)</th>
+            <th>Artist</th>
+            <th>Song</th>
+            <th>Album</th>
           </tr>
-        <% end %>
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          <% @plays.each do |p| %>
+            <tr>
+              <td><%= p.played_at&.in_time_zone('Pacific Time (US & Canada)')&.strftime('%Y-%m-%d %H:%M') %></td>
+              <td><%= p.artist %></td>
+              <td><%= p.song %></td>
+              <td><%= p.album %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
   <% else %>
     <p>No Morning Show plays found yet. Try:</p>
     <pre>bin/rails kexp:import_morning</pre>

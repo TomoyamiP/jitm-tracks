@@ -21,3 +21,108 @@ nav {
     }
   }
 }
+
+/* Morning page styles */
+.morning {
+  .actions {
+    margin: 1rem 0;
+    display: flex;
+    gap: 1rem;
+
+    form {
+      display: inline-block; /* make button_to forms line up */
+    }
+
+    .btn {
+      background: #4CAF50; /* green */
+      color: #fff;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    .btn:hover {
+      background: #45a049;
+    }
+
+    .btn-danger {
+      background: #d9534f; /* red */
+    }
+
+    .btn-danger:hover {
+      background: #c9302c;
+    }
+  }
+
+  .notice {
+    color: green;
+    font-weight: bold;
+    margin: 0.5rem 0;
+  }
+
+  .alert {
+    color: red;
+    font-weight: bold;
+    margin: 0.5rem 0;
+  }
+}
+
+.morning {
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    font-size: 0.95rem;
+  }
+
+  th, td {
+    border: 1px solid #ddd;
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+  }
+
+  th {
+    background-color: #f5f5f5;
+    font-weight: bold;
+  }
+
+  tr:nth-child(even) {
+    background-color: #fafafa;
+  }
+
+  tr:hover {
+    background-color: #f0f0f0;
+  }
+}
+
+.morning {
+  .table-wrap {
+    max-height: 70vh;     /* scrollable window */
+    overflow-y: auto;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    background: #fff;
+  }
+
+  thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;           /* keep above rows */
+    background: #f5f5f5;  /* same as your header bg */
+  }
+
+  /* Optional: make the first column sticky too */
+  /*
+  tbody td:first-child,
+  thead th:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    background: #fff;
+  }
+  thead th:first-child { z-index: 3; background: #f5f5f5; }
+  */
+}
