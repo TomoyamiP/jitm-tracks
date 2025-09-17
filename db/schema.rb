@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_09_16_132153) do
+ActiveRecord::Schema[7.1].define(version: 2025_09_17_143041) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -28,6 +28,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_16_132153) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "show_id"
+    t.index ["kexp_play_id"], name: "index_plays_on_kexp_play_id", unique: true
+    t.index ["show_id", "played_at", "artist", "song"], name: "index_plays_on_show_time_artist_song", unique: true, where: "((artist IS NOT NULL) AND (song IS NOT NULL))"
     t.index ["show_id"], name: "index_plays_on_show_id"
   end
 

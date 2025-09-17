@@ -2,6 +2,9 @@
 class Play < ApplicationRecord
   belongs_to :show, optional: true
 
+  validates :kexp_play_id, presence: true, uniqueness: true
+  validates :played_at,    presence: true
+
   # Scope: all plays for a given program, ignoring blanks
   scope :for_program, ->(program_name) {
     joins(:show)

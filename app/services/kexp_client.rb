@@ -11,10 +11,12 @@ class KexpClient
   MORNING_PROGRAM_FALLBACK_ID = 16
   MORNING_PROGRAM_NAME        = "The Morning Show"
 
-  # ---- small helpers ---------------------------------------------------------
+  # ---------------------------------------------------------------------------
+  # Small helpers
+  # ---------------------------------------------------------------------------
 
   def get_results(path_or_url, query = {})
-    res = self.class.get(path_or_url, query: query)
+    res  = self.class.get(path_or_url, query: query)
     body = res.parsed_response
     body.is_a?(Hash) ? (body["results"] || []) : (body || [])
   rescue StandardError
@@ -37,7 +39,9 @@ class KexpClient
     nil
   end
 
-  # ---- raw fetchers ----------------------------------------------------------
+  # ---------------------------------------------------------------------------
+  # Raw fetchers
+  # ---------------------------------------------------------------------------
 
   def fetch_recent_plays(limit: 20)
     get_results('/plays/', { limit: limit })
@@ -55,7 +59,9 @@ class KexpClient
     get_results('/plays/', { show: show_id, limit: limit, offset: offset })
   end
 
-  # ---- importers -------------------------------------------------------------
+  # ---------------------------------------------------------------------------
+  # Importers
+  # ---------------------------------------------------------------------------
 
   def import_recent_plays(limit: 20)
     fetch_recent_plays(limit: limit).each do |play|
@@ -85,18 +91,19 @@ class KexpClient
     end
   end
 
-  # Import all plays for a specific show
+  # Import all plays for a specific show.
+  # ✅ Always returns an Integer: number of new rows created.
   def import_plays_for_show(show_id)
     plays = fetch_plays_for_show(show_id, limit: 200)
-    return if plays.blank?
+    plays = [] unless plays.is_a?(Array) # guard
 
     # Ensure we have a Show record first
     show_details = fetch_show("https://api.kexp.org/v2/shows/#{show_id}/")
 
-    # ✅ Guard: only import if this show is actually The Morning Show
-    unless show_details && show_details["program_name"].to_s.strip == "The Morning Show"
-      Rails.logger.info("Skipping show ##{show_id} (#{show_details && show_details['program_name']}) – not The Morning Show")
-      return
+    # Only import Morning Show
+    unless show_details && show_details["program_name"].to_s.strip == MORNING_PROGRAM_NAME
+      Rails.logger.info("Skipping show ##{show_id} (#{show_details && show_details['program_name']}) – not #{MORNING_PROGRAM_NAME}")
+      return 0
     end
 
     show = Show.find_or_initialize_by(kexp_show_id: show_id)
@@ -106,22 +113,45 @@ class KexpClient
     show.airdate      = show_details["start_time"]
     show.save!
 
+    created = 0
     plays.each do |play|
-      next unless play
-      Play.find_or_create_by!(kexp_play_id: play["id"]) do |p|
-        p.song          = play["song"]
-        p.artist        = play["artist"]
-        p.album         = play["album"]
-        p.play_type     = play["play_type"]
-        p.played_at     = play["airdate"]
-        p.thumbnail_uri = play["thumbnail_uri"]
-        p.show_uri      = play["show_uri"]
-        p.show          = show
+      # 1) Skip blanks fast
+      next if play["artist"].blank? || play["song"].blank?
+
+      # 2) Common attrs
+      attrs = {
+        song:          play["song"],
+        artist:        play["artist"],
+        album:         play["album"],
+        play_type:     play["play_type"],
+        played_at:     play["airdate"],
+        thumbnail_uri: play["thumbnail_uri"],
+        show_uri:      play["show_uri"],
+        show:          show
+      }
+
+      begin
+        if play["id"].present?
+          rec = Play.find_or_initialize_by(kexp_play_id: play["id"])
+          was_new = rec.new_record?
+          rec.assign_attributes(attrs)
+          rec.save!
+          created += 1 if was_new
+        else
+          Play.create!(attrs)
+          created += 1
+        end
+      rescue ActiveRecord::RecordNotUnique, ActiveRecord::StatementInvalid => e
+        # Unique index collision -> already imported by another path; ignore.
+        raise unless e.message =~ /unique|duplicate/i
       end
     end
+
+    created
   end
 
-  # Import plays for every show in a program since a given time
+  # Import plays for every show in a program since a given time.
+  # ✅ Sums the integer returned by import_plays_for_show.
   def import_plays_for_program(program_id, since: 1.month.ago)
     shows = fetch_shows_for_program(program_id, limit: 200)
     total = 0
@@ -136,7 +166,7 @@ class KexpClient
   end
 
   # One-shot: import all plays for today's Morning Show blocks.
-  # Returns the count of newly created Play rows.
+  # ✅ Returns integer count.
   def import_morning_today!
     programs   = search_programs("Morning", limit: 50)
     morning    = programs.find { |p| p["name"].to_s.strip == MORNING_PROGRAM_NAME }
@@ -154,24 +184,19 @@ class KexpClient
       end
     end
 
-    return 0 if todays_shows.empty?
-
-    todays_shows.sum { |s| import_plays_for_show(s["id"]) }
+    todays_shows.sum { |s| import_plays_for_show(s["id"]).to_i }
   end
 
-  # Import Morning Show plays since a given date
+  # Backfill Morning Show plays since a given date/time.
   # Example: client.import_morning_since!(30.days.ago)
+  # ✅ Returns integer count.
   def import_morning_since!(since_date)
-    require "date"
-
-    # 1) Find the program id for "The Morning Show"
     programs   = search_programs("Morning", limit: 50)
-    morning    = programs.find { |p| p["name"].to_s.strip == "The Morning Show" }
-    program_id = (morning && morning["id"]) || 16
+    morning    = programs.find { |p| p["name"].to_s.strip == MORNING_PROGRAM_NAME }
+    program_id = (morning && morning["id"]) || MORNING_PROGRAM_FALLBACK_ID
 
-    puts "Using program_id=#{program_id} for The Morning Show (backfill since #{since_date})"
+    puts "Using program_id=#{program_id} for #{MORNING_PROGRAM_NAME} (backfill since #{since_date})"
 
-    # 2) Fetch shows for that program, filter by since_date
     shows = fetch_shows_for_program(program_id, limit: 200)
     backfill_shows = shows.select do |s|
       begin
@@ -181,15 +206,9 @@ class KexpClient
       end
     end
 
-    # 3) Import plays for each show block
-    imported = 0
-    backfill_shows.each do |s|
+    backfill_shows.sum do |s|
       puts "Importing plays for show ##{s["id"]} (#{s["program_name"]} at #{s["start_time"]})..."
-      before = Play.count
-      import_plays_for_show(s["id"])
-      imported += (Play.count - before)
+      import_plays_for_show(s["id"]).to_i
     end
-
-    imported
   end
 end

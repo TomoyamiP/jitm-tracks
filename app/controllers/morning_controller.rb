@@ -1,9 +1,25 @@
 class MorningController < ApplicationController
   def index
-    @plays = Play.for_program("The Morning Show")
-                 .within_show_window
-                 .order(played_at: :desc)
-                 .limit(200)
+    rel = Play
+      .for_program("The Morning Show")
+      .within_show_window
+      .order(played_at: :desc)
+      .limit(400) # grab a bit more, we'll collapse below
+
+    rows = rel.to_a
+
+    # Collapse “near-dupes”: same show, artist, song, and same minute
+    seen = {}
+    filtered = []
+    rows.each do |p|
+      minute_key = p.played_at&.in_time_zone('Pacific Time (US & Canada)')&.strftime('%Y-%m-%d %H:%M')
+      key = [p.show_id, p.artist, p.song, minute_key]
+      next if seen[key]
+      seen[key] = true
+      filtered << p
+    end
+
+    @plays = filtered.first(200)
   end
 
   def refresh
