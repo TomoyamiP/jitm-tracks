@@ -126,3 +126,53 @@ nav {
   thead th:first-child { z-index: 3; background: #f5f5f5; }
   */
 }
+
+/* Morning Show page */
+
+.top-songs {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 2rem;
+}
+
+.top-songs th, .top-songs td {
+  border: 1px solid #ddd;
+  padding: 6px 10px;
+}
+
+.recent-plays-box {
+  max-height: 400px; /* adjust as needed */
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  padding: 4px;
+}
+
+.recent-plays {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.recent-plays th, .recent-plays td {
+  border: 1px solid #ddd;
+  padding: 6px 10px;
+}
+
+/* Scrollable boxes for tables */
+.scroll-box {
+  max-height: calc(1.5em * 12 + 40px); /* ~12 rows + header */
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  margin-bottom: 1.5rem;
+}
+
+.top-songs, .recent-plays {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.top-songs th, .top-songs td,
+.recent-plays th, .recent-plays td {
+  border: 1px solid #ddd;
+  padding: 6px 10px;
+  font-size: 14px;
+}

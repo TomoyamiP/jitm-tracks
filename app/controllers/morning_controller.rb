@@ -1,5 +1,6 @@
 class MorningController < ApplicationController
   def index
+    # ---- Recent plays (with dedupe) ----
     rel = Play
       .for_program("The Morning Show")
       .within_show_window
@@ -20,6 +21,13 @@ class MorningController < ApplicationController
     end
 
     @plays = filtered.first(200)
+
+    # ---- Top songs (last 30 days) ----
+    @top_songs = Play.top_songs_for(
+      "The Morning Show",
+      since: 30.days.ago,
+      limit: 40
+    )
   end
 
   def refresh
