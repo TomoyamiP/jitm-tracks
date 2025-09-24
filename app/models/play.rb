@@ -42,29 +42,42 @@ class Play < ApplicationRecord
   # Returns: [[artist, song, count], ...]
   # If not Postgres, falls back to simple grouping.
   # ------------------------------------------------------------
-  def self.top_songs_normalized(program_name, since: nil, limit: 10)
-    adapter = ActiveRecord::Base.connection.adapter_name.to_s.downcase
-
-    unless adapter.include?("postgres")
-      # Fallback for non-Postgres (sqlite etc.)
-      return top_songs_for(program_name, since: since, limit: limit)
-    end
-
+  def self.top_songs_for(program_name, since: nil, limit: 40)
     rel = for_program(program_name)
     rel = rel.where("plays.played_at >= ?", since) if since.present?
 
-    rel
-      .select(
-        "LOWER(REGEXP_REPLACE(artist, '\\s+feat\\..*$', '')) AS akey",
-        "LOWER(REGEXP_REPLACE(song,   '[^a-z0-9]+', '', 'g')) AS skey",
-        "MIN(artist) AS artist",
-        "MIN(song)   AS song",
-        "COUNT(*)    AS c"
-      )
-      .group("akey", "skey")
-      .order("c DESC")
-      .limit(limit)
-      .map { |r| [r.artist, r.song, r.c.to_i] }
+    adapter = ActiveRecord::Base.connection.adapter_name.to_s.downcase
+
+    if adapter.include?("postgres")
+      # Postgres: normalize artist (drop " feat. ..."), normalize song (alnum only), lower-case
+      rel = rel
+        .select(
+          "LOWER(REGEXP_REPLACE(plays.artist, '\\s+feat\\..*$', '')) AS akey",
+          "LOWER(REGEXP_REPLACE(plays.song,   '[^a-z0-9]+', '', 'g')) AS skey",
+          "MIN(plays.artist) AS sample_artist",
+          "MIN(plays.song)   AS sample_song",
+          "COUNT(*)          AS cnt"
+        )
+        .group("akey, skey")
+        .order(Arel.sql("cnt DESC"))
+        .limit(limit)
+    else
+      # SQLite / others: simpler normalization
+      rel = rel
+        .select(
+          "LOWER(plays.artist) AS akey",
+          "LOWER(plays.song)   AS skey",
+          "MIN(plays.artist)   AS sample_artist",
+          "MIN(plays.song)     AS sample_song",
+          "COUNT(*)            AS cnt"
+        )
+        .group("akey, skey")
+        .order(Arel.sql("cnt DESC"))
+        .limit(limit)
+    end
+
+    # Return [[artist, song, count], ...]
+    rel.map { |r| [r["sample_artist"], r["sample_song"], r["cnt"].to_i] }
   end
 end
 

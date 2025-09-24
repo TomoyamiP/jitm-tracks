@@ -15,7 +15,7 @@
   <% end %>
   <!-- 🎵 Top 40 -->
   <%= turbo_frame_tag "top40" do %>
-    <%= render partial: "top40", locals: { top_songs: @top_songs } %>
+    <%= render partial: "top40", locals: { top_songs: @top_songs, period: @period } %>
   <% end %>
   <!-- 🎵 Recent plays -->
   <h2>Recent Plays</h2>
