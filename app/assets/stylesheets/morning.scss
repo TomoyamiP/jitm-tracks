@@ -176,3 +176,40 @@ nav {
   padding: 6px 10px;
   font-size: 14px;
 }
+
+.top40-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+
+  h2 {
+    margin: 0;
+  }
+
+  .period-buttons {
+    display: flex;
+    gap: 0.5rem;
+
+    .btn {
+      background-color: #1a2a80; /* dark blue */
+      color: #fff;
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: background-color 0.2s ease;
+
+      &:hover {
+        background-color: #ffd166; /* yellow highlight */
+        color: #000;
+      }
+    }
+  }
+}
+
+.period-buttons .btn.active {
+  background-color: #ffd166;
+  color: #000;
+  font-weight: bold;
+}

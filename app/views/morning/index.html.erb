@@ -13,50 +13,36 @@
   <% if alert %>
     <p class="alert"><%= alert %></p>
   <% end %>
-  <!-- 🔥 Top Songs (last 30 days) -->
-  <h2>Top 40 (Last 30 Days)</h2>
-  <div class="scroll-box">
-    <table class="top-songs">
-      <thead>
-        <tr>
-          <th>Artist</th>
-          <th>Song</th>
-          <th>Count</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @top_songs.each do |artist, song, count| %>
-          <tr>
-            <td><%= artist %></td>
-            <td><%= song %></td>
-            <td><%= count %></td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
-  </div>
+  <!-- 🎵 Top 40 -->
+  <%= turbo_frame_tag "top40" do %>
+    <%= render partial: "top40", locals: { top_songs: @top_songs } %>
+  <% end %>
   <!-- 🎵 Recent plays -->
   <h2>Recent Plays</h2>
   <div class="scroll-box">
-    <table class="recent-plays">
-      <thead>
-        <tr>
-          <th>Time (PT)</th>
-          <th>Artist</th>
-          <th>Song</th>
-          <th>Album</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @plays.each do |p| %>
+    <% if @plays.present? %>
+      <table class="recent-plays">
+        <thead>
           <tr>
-            <td><%= p.played_at&.in_time_zone('Pacific Time (US & Canada)')&.strftime('%Y-%m-%d %H:%M') %></td>
-            <td><%= p.artist %></td>
-            <td><%= p.song %></td>
-            <td><%= p.album %></td>
+            <th>Time (PT)</th>
+            <th>Artist</th>
+            <th>Song</th>
+            <th>Album</th>
           </tr>
-        <% end %>
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          <% @plays.each do |p| %>
+            <tr>
+              <td><%= p.played_at&.in_time_zone('Pacific Time (US & Canada)')&.strftime('%Y-%m-%d %H:%M') %></td>
+              <td><%= p.artist %></td>
+              <td><%= p.song %></td>
+              <td><%= p.album %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% else %>
+      <p>No recent plays found yet. Try refreshing or backfilling.</p>
+    <% end %>
   </div>
 </div>

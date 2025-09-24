@@ -1,0 +1,38 @@
+<div class="top40-header">
+  <h2>Top 40 (<%= case params[:period]
+                 when "90" then "Last 90 Days"
+                 when "365" then "Last Year"
+                 when "all" then "All Time"
+                 else "Last 30 Days"
+               end %>)</h2>
+  <div class="period-buttons">
+    <%= link_to "30 Days", morning_index_path(period: "30"), class: "btn #{'active' if params[:period].blank? || params[:period] == '30'}" %>
+    <%= link_to "90 Days", morning_index_path(period: "90"), class: "btn #{'active' if params[:period] == '90'}" %>
+    <%= link_to "1 Year",  morning_index_path(period: "365"), class: "btn #{'active' if params[:period] == '365'}" %>
+    <%= link_to "All",     morning_index_path(period: "all"), class: "btn #{'active' if params[:period] == 'all'}" %>
+  </div>
+</div>
+<div class="scroll-box">
+  <% if top_songs.present? %>
+    <table class="top-songs">
+      <thead>
+        <tr>
+          <th>Artist</th>
+          <th>Song</th>
+          <th>Count</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% top_songs.each do |artist, song, count| %>
+          <tr>
+            <td><%= artist %></td>
+            <td><%= song %></td>
+            <td><%= count %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <p>No Top 40 data available yet. Try importing plays first.</p>
+  <% end %>
+</div>
