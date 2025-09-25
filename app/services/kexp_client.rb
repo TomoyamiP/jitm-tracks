@@ -2,6 +2,7 @@
 require "httparty"
 require "time"
 require "date"
+require "set"
 
 class KexpClient
   include HTTParty
@@ -10,6 +11,12 @@ class KexpClient
 
   MORNING_PROGRAM_FALLBACK_ID = 16
   MORNING_PROGRAM_NAME        = "The Morning Show"
+
+  # Safety rails for pagination
+  PER_PAGE_SHOWS        = 50   # KEXP shows endpoint effectively caps at 50
+  PER_PAGE_PLAYS        = 200
+  MAX_PAGES             = 10_000
+  MAX_STALE_PAGES       = 3    # break if we see the "same page" this many times in a row
 
   # ---------------------------------------------------------------------------
   # Helpers
@@ -59,7 +66,7 @@ class KexpClient
     get_results("/plays/", { show: show_id, limit: limit, offset: offset })
   end
 
-  # ✅ NEW: fetch plays using a date range (oldest → newest)
+  # ✅ By-airdate window (oldest → newest)
   def fetch_plays_by_airdate(from:, to:, limit: 200, offset: 0)
     get_results("/plays/", {
       airdate_after:  from.iso8601,
@@ -195,8 +202,8 @@ class KexpClient
     todays_shows.sum { |s| import_plays_for_show(s["id"]).to_i }
   end
 
-  # Backfill Morning Show plays since a given date, with correct pagination.
-  # If dry_run: true, nothing is saved — just counts how many rows would be created.
+  # Backfill Morning Show plays since a given date (shows endpoint).
+  # Defensively breaks if the API repeats pages.
   def import_morning_since!(since_date, dry_run: false)
     programs   = search_programs("Morning", limit: 50)
     morning    = programs.find { |p| p["name"].to_s.strip == MORNING_PROGRAM_NAME }
@@ -204,14 +211,27 @@ class KexpClient
 
     puts "Using program_id=#{program_id} for #{MORNING_PROGRAM_NAME} (backfill since #{since_date})"
 
-    imported = 0
-    offset   = 0
-    # KEXP API effectively caps this at 50 — do not set higher.
-    per_page = 50
+    imported          = 0
+    offset            = 0
+    pages             = 0
+    stale_page_hits   = 0
+    prev_first_showid = nil
 
     loop do
-      shows = fetch_shows_for_program(program_id, limit: per_page, offset: offset)
+      break if pages >= MAX_PAGES
+
+      shows = fetch_shows_for_program(program_id, limit: PER_PAGE_SHOWS, offset: offset)
       break if shows.blank?
+
+      # Detect "same page again" from the API (stale page)
+      first_id = shows.first && shows.first["id"]
+      if offset > 0 && first_id && first_id == prev_first_showid
+        stale_page_hits += 1
+        break if stale_page_hits >= MAX_STALE_PAGES
+      else
+        stale_page_hits = 0
+      end
+      prev_first_showid = first_id
 
       shows.each do |s|
         start_time =
@@ -236,46 +256,57 @@ class KexpClient
         end
       end
 
-      # Advance by what we actually received so we don’t skip pages.
+      pages  += 1
       offset += shows.size
-
-      # Safety: if API keeps returning the same page, bail to avoid an infinite loop.
-      break if shows.size < per_page
+      break if shows.size < PER_PAGE_SHOWS
     end
 
     imported
   end
 
-  # ✅ NEW: Backfill Morning Show plays for an arbitrary date window via /plays
-  # from:, to: are Time/Date/DateTime; returns number of new rows
+  # ✅ Backfill Morning Show plays for an arbitrary date window via /plays
+  # Uses defensive pagination to avoid infinite loops.
   def import_morning_range!(from:, to:, dry_run: false)
     raise ArgumentError, "from must be < to" if from >= to
 
-    per_page   = 200
-    offset     = 0
-    imported   = 0
-    show_cache = {} # { show_id => show_details_hash }
+    imported          = 0
+    offset            = 0
+    pages             = 0
+    stale_page_hits   = 0
+    prev_first_playid = nil
 
     loop do
-      batch = fetch_plays_by_airdate(from: from, to: to, limit: per_page, offset: offset)
+      break if pages >= MAX_PAGES
+
+      batch = fetch_plays_by_airdate(from: from, to: to, limit: PER_PAGE_PLAYS, offset: offset)
       break if batch.blank?
 
+      # Detect "same page again" from the API (stale page)
+      first_id = batch.first && batch.first["id"]
+      if offset > 0 && first_id && first_id == prev_first_playid
+        stale_page_hits += 1
+        break if stale_page_hits >= MAX_STALE_PAGES
+      else
+        stale_page_hits = 0
+      end
+      prev_first_playid = first_id
+
       batch.each do |play|
-        # Skip blanks fast
         next if play["artist"].blank? || play["song"].blank?
 
-        # Resolve show id and details (with cache)
+        # Resolve show id & details (cache)
         show_id = play["show_uri"]&.split("/")&.last&.to_i
         next unless show_id && show_id > 0
 
-        details = show_cache[show_id]
+        @__show_cache ||= {}
+        details = @__show_cache[show_id]
         unless details
           details = fetch_show(play["show_uri"]) || {}
-          show_cache[show_id] = details
+          @__show_cache[show_id] = details
         end
 
         # Only import Morning Show
-        next unless details["program_name"].to_s.strip == MORNING_PROGRAM_NAME
+        next unless details["program_name"]&.to_s&.strip == MORNING_PROGRAM_NAME
 
         # Ensure Show row
         show = Show.find_or_initialize_by(kexp_show_id: show_id)
@@ -284,6 +315,11 @@ class KexpClient
         show.host_names   = Array(details["host_names"]).join(", ")
         show.airdate      = details["start_time"]
         show.save! if show.changed?
+
+        if dry_run
+          imported += 1
+          next
+        end
 
         attrs = {
           song:          play["song"],
@@ -296,23 +332,21 @@ class KexpClient
           show:          show
         }
 
-        if dry_run
-          imported += 1
+        if play["id"].present?
+          rec     = Play.find_or_initialize_by(kexp_play_id: play["id"])
+          was_new = rec.new_record?
+          rec.assign_attributes(attrs)
+          rec.save!
+          imported += 1 if was_new
         else
-          if play["id"].present?
-            rec     = Play.find_or_initialize_by(kexp_play_id: play["id"])
-            was_new = rec.new_record?
-            rec.assign_attributes(attrs)
-            rec.save!
-            imported += 1 if was_new
-          else
-            Play.create!(attrs)
-            imported += 1
-          end
+          Play.create!(attrs)
+          imported += 1
         end
       end
 
-      offset += per_page
+      pages  += 1
+      offset += batch.size
+      break if batch.size < PER_PAGE_PLAYS
     end
 
     imported

@@ -4,8 +4,10 @@
     Showing <%= @plays.size %> plays • Last updated <%= Time.current.strftime('%Y-%m-%d %H:%M') %>
   </div>
   <div class="actions">
-    <%= button_to "Refresh Today", refresh_morning_index_path, method: :post, class: "btn" %>
-    <%= button_to "Backfill Last 30 Days", backfill_morning_index_path, method: :post, class: "btn btn-danger" %>
+    <%= button_to "Refresh Today", refresh_morning_index_path,
+          method: :post, class: "btn btn-refresh" %>
+    <%= button_to "Backfill Last 30 Days", backfill_morning_index_path,
+          method: :post, class: "btn btn-danger" %>
   </div>
   <% if notice %>
     <p class="notice"><%= notice %></p>

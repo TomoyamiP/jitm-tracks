@@ -1,3 +1,9 @@
+/* --- Fonts (no color changes) --- */
+body { font-family: "Inter", sans-serif; }
+h1, h2, h3 { font-family: "Poppins", sans-serif; }
+
+/* Keep your existing styles below (unchanged except buttons/fonts) */
+
 .morning h1 { margin-bottom: 0.5rem; }
 .morning .meta { color: #666; margin-bottom: 1rem; font-size: 0.9rem; }
 .morning table { width: 100%; border-collapse: collapse; }
@@ -6,17 +12,17 @@
 .morning th { text-align: left; }
 
 nav {
-  background: #f5f5f5;   /* light gray bar */
+  background: #f5f5f5;
   padding: 10px;
 
   a {
-    color: #333;          /* dark text */
+    color: #333;
     font-weight: bold;
     text-decoration: none;
     margin-right: 15px;
 
     &:hover {
-      color: #007acc;     /* blue on hover */
+      color: #007acc;
       text-decoration: underline;
     }
   }
@@ -29,45 +35,33 @@ nav {
     display: flex;
     gap: 1rem;
 
-    form {
-      display: inline-block; /* make button_to forms line up */
-    }
+    form { display: inline-block; }
 
+    /* Base button → Refresh Today uses this (green) */
     .btn {
-      background: #4CAF50; /* green */
-      color: #fff;
+      font-family: "Inter", sans-serif;
+      background: #511281;   /* Refresh Today */
+      color: #fff;            /* ensure white text */
       padding: 0.5rem 1rem;
       border: none;
       border-radius: 4px;
       cursor: pointer;
       font-weight: bold;
       text-decoration: none;
+      transition: background-color 0.2s ease, opacity 0.2s ease;
     }
+    .btn:hover { background: #511281; }
 
-    .btn:hover {
-      background: #45a049;
-    }
-
+    /* Backfill button override → blue */
     .btn-danger {
-      background: #d9534f; /* red */
+      background: #DA0037;
+      color: #fff;            /* ensure white text */
     }
-
-    .btn-danger:hover {
-      background: #c9302c;
-    }
+    .btn-danger:hover { background: #DA0037; }
   }
 
-  .notice {
-    color: green;
-    font-weight: bold;
-    margin: 0.5rem 0;
-  }
-
-  .alert {
-    color: red;
-    font-weight: bold;
-    margin: 0.5rem 0;
-  }
+  .notice { color: green; font-weight: bold; margin: 0.5rem 0; }
+  .alert  { color: red;   font-weight: bold; margin: 0.5rem 0; }
 }
 
 .morning {
@@ -89,18 +83,13 @@ nav {
     font-weight: bold;
   }
 
-  tr:nth-child(even) {
-    background-color: #fafafa;
-  }
-
-  tr:hover {
-    background-color: #f0f0f0;
-  }
+  tr:nth-child(even) { background-color: #fafafa; }
+  tr:hover { background-color: #f0f0f0; }
 }
 
 .morning {
   .table-wrap {
-    max-height: 70vh;     /* scrollable window */
+    max-height: 70vh;
     overflow-y: auto;
     border: 1px solid #e5e5e5;
     border-radius: 8px;
@@ -110,66 +99,36 @@ nav {
   thead th {
     position: sticky;
     top: 0;
-    z-index: 2;           /* keep above rows */
-    background: #f5f5f5;  /* same as your header bg */
+    z-index: 2;
+    background: #f5f5f5;
   }
-
-  /* Optional: make the first column sticky too */
-  /*
-  tbody td:first-child,
-  thead th:first-child {
-    position: sticky;
-    left: 0;
-    z-index: 1;
-    background: #fff;
-  }
-  thead th:first-child { z-index: 3; background: #f5f5f5; }
-  */
 }
 
-/* Morning Show page */
-
+/* Top/Recent tables */
 .top-songs {
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 2rem;
 }
-
-.top-songs th, .top-songs td {
-  border: 1px solid #ddd;
-  padding: 6px 10px;
-}
+.top-songs th, .top-songs td { border: 1px solid #ddd; padding: 6px 10px; }
 
 .recent-plays-box {
-  max-height: 400px; /* adjust as needed */
+  max-height: 400px;
   overflow-y: auto;
   border: 1px solid #ccc;
   padding: 4px;
 }
-
-.recent-plays {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.recent-plays th, .recent-plays td {
-  border: 1px solid #ddd;
-  padding: 6px 10px;
-}
+.recent-plays { width: 100%; border-collapse: collapse; }
+.recent-plays th, .recent-plays td { border: 1px solid #ddd; padding: 6px 10px; }
 
 /* Scrollable boxes for tables */
 .scroll-box {
-  max-height: calc(1.5em * 12 + 40px); /* ~12 rows + header */
+  max-height: calc(1.5em * 12 + 40px);
   overflow-y: auto;
   border: 1px solid #ccc;
   margin-bottom: 1.5rem;
 }
-
-.top-songs, .recent-plays {
-  width: 100%;
-  border-collapse: collapse;
-}
-
+.top-songs, .recent-plays { width: 100%; border-collapse: collapse; }
 .top-songs th, .top-songs td,
 .recent-plays th, .recent-plays td {
   border: 1px solid #ddd;
@@ -177,39 +136,245 @@ nav {
   font-size: 14px;
 }
 
+/* Top 40 header + period buttons */
 .top40-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 1rem;
 
-  h2 {
-    margin: 0;
-  }
+  h2 { margin: 0; }
 
   .period-buttons {
     display: flex;
     gap: 0.5rem;
 
+    /* Period buttons → purple; active → red; no yellow hover */
     .btn {
-      background-color: #1a2a80; /* dark blue */
+      font-family: "Inter", sans-serif;
+      background-color: #511281; /* default purple */
       color: #fff;
       padding: 0.4rem 0.8rem;
       border-radius: 6px;
       text-decoration: none;
       font-size: 0.9rem;
-      transition: background-color 0.2s ease;
+      transition: opacity 0.2s ease;
+    }
+    .btn:hover { opacity: 0.85; }
 
-      &:hover {
-        background-color: #ffd166; /* yellow highlight */
-        color: #000;
-      }
+    .btn.active {
+      background-color: #DA0037; /* active red */
+      color: #fff;
     }
   }
 }
 
-.period-buttons .btn.active {
-  background-color: #ffd166;
-  color: #000;
+/* ===== Modal ===== */
+:root {
+  --charcoal: #2C2E43;
+  --stone:    #595260;
+  --mist:     #B2B1B9;
+  --yellow:   #FFD523;
+  --white:    #ffffff;
+}
+
+.modal.hidden { display: none; }
+
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+}
+
+.modal-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+}
+
+.modal-dialog {
+  position: relative;
+  margin: 8vh auto 0;
+  width: calc(min(720px, 92vw));
+  background: var(--charcoal);
+  color: var(--white);
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+  padding: 1.25rem 1.5rem 1.5rem;
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+.modal-dialog h2 {
+  margin: 0 0 0.5rem;
+  font-family: "Poppins", system-ui, -apple-system, Segoe UI, Roboto, "Inter", Arial, sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
+.modal-dialog p,
+.modal-dialog li {
+  font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  color: var(--mist);
+  line-height: 1.55;
+}
+
+.modal-dialog ul {
+  margin: 0.5rem 0 1rem 1.25rem;
+}
+
+.modal-close {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  appearance: none;
+  border: none;
+  background: transparent;
+  color: var(--mist);
+  font-size: 1.75rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.modal-close:hover { color: var(--yellow); }
+
+/* Optional: style the nav link to match your app */
+nav .nav-link {
+  color: #333;
+  font-weight: 600;
+  text-decoration: none;
+}
+nav .nav-link:hover {
+  color: #1a2a80; /* your existing hover blue */
+  text-decoration: underline;
+}
+
+nav {
+  display: flex;
+  justify-content: flex-end; /* pushes link(s) to the right */
+  background: #f5f5f5;
+  padding: 10px;
+
+  .nav-link {
+    color: #333;
+    font-weight: bold;
+    text-decoration: none;
+    margin-left: 15px;
+
+    &:hover {
+      color: #007acc;
+      text-decoration: underline;
+    }
+  }
+}
+
+/* About modal link styling */
+#about-modal a {
+  color: #4CAF50; /* green */
+  text-decoration: none;
   font-weight: bold;
+}
+
+#about-modal a:hover {
+  color: #45a049; /* slightly darker green on hover */
+  text-decoration: none; /* keep underline off */
+}
+
+/* About modal styling */
+#about-modal {
+  color: #aaa; /* lighter gray text */
+}
+
+#about-modal h2 {
+  color: #aaa; /* match header to text color */
+  margin-bottom: 1rem;
+}
+
+#about-modal a {
+  color: #4CAF50; /* green links */
+  text-decoration: none;
+  font-weight: bold;
+}
+
+#about-modal a:hover {
+  color: #45a049; /* darker green hover */
+  text-decoration: none;
+}
+
+/* ================================
+   About Modal Styles
+================================ */
+#about-modal {
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6); /* dark backdrop */
+  }
+
+  .modal-dialog {
+    background: #f5f5f5; /* light gray background */
+    color: #000;         /* black text */
+    padding: 1.5rem;
+    border-radius: 8px;
+    max-width: 600px;
+    margin: 2rem auto;
+    font-family: 'Inter', sans-serif;
+    position: relative;
+    z-index: 10;
+  }
+
+  h2#about-title {
+    color: #000;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    margin-bottom: 1rem;
+  }
+
+  p, ul, li {
+    color: #000;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+  }
+
+  .morning-show {
+    color: #000;
+    font-weight: 600;
+  }
+
+  /* KEXP link */
+  a.kexp-link {
+    color: #FFB100; /* orange default */
+    font-weight: 600;
+    text-decoration: none;
+
+    &:hover {
+      color: #0366d6; /* blue on hover */
+      text-decoration: underline;
+    }
+  }
+
+  /* GitHub link */
+  a.github-link {
+    color: #0366d6; /* blue default */
+    font-weight: 600;
+    text-decoration: none;
+
+    &:hover {
+      color: #FFB100; /* orange on hover */
+      text-decoration: underline;
+    }
+  }
+
+  .modal-close {
+    background: none;
+    border: none;
+    color: #000;
+    font-size: 1.5rem;
+    cursor: pointer;
+    float: right;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: #DA0037; /* your red */
+    }
+  }
 }

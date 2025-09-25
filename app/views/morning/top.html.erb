@@ -1,0 +1,4 @@
+<!-- app/views/morning/top.html.erb -->
+<%= turbo_frame_tag "top40" do %>
+  <%= render partial: "top40", locals: { top_songs: @top_songs, period: @period } %>
+<% end %>

@@ -1,17 +1,54 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>JitmTracks</title>
+    <title>JITMtracks</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
+    <!-- Fonts (load once) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
   </head>
   <body>
-    <nav>
-      <%= link_to "Morning Show", morning_index_path %>
+    <!-- Top nav -->
+    <nav class="site-nav">
+      <%= link_to "About", "#", id: "about-link", class: "nav-link" %>
     </nav>
+    <!-- Main content -->
     <%= yield %>
+    <!-- About Modal -->
+    <div id="about-modal" class="modal hidden" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="about-title">
+      <div class="modal-overlay" data-close-modal></div>
+      <div class="modal-dialog" role="document">
+        <button class="modal-close" type="button" aria-label="Close" data-close-modal>&times;</button>
+        <h2 id="about-title">About This Project</h2>
+        <p>
+          This app pulls track plays for
+          <strong class="morning-show">The Morning Show</strong> on
+          <strong><a href="https://www.kexp.org/" target="_blank" rel="noopener" class="kexp-link">KEXP</a></strong>,
+          stores them locally, and shows recent plays plus Top lists by time period.
+        </p>
+        <p>
+          I’m from Seattle, and KEXP has always been part of home for me.
+          The Morning Show<em> hosted by John Richards</em> was what I had on during my morning rush-hour commute — not just background noise, but a way to wake up with the city and deal with Seattle's terrible traffic on I-5.
+          And every Friday, hearing <strong>Mint Royale’s "Show Me (with Pos from De La Soul)"</strong> became something I looked forward to, a little tradition that stuck with me.
+        </p>
+        <p>
+          This project is my way of keeping that connection alive.
+          It’s not just a technical build — it’s a way to hold onto the music and memories that shaped my everyday life living in Seattle.
+        </p>
+        <ul>
+          <li>Backfill: grabs historical plays</li>
+          <li>Refresh Today: pulls today’s Morning Show</li>
+          <li>Top 40: switch between 30/90/365 days or All</li>
+        </ul>
+        <p>Built with Rails + Turbo.</p>
+        <p>
+          Follow my work on
+          <a href="https://github.com/TomoyamiP" target="_blank" rel="noopener" class="github-link">GitHub</a>.
+        </p>
+      </div>
+    </div>
   </body>
 </html>
