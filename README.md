@@ -1,5 +1,5 @@
 # jitm-tracks
-🎵 John in The Morning Tracks
+John in The Morning Tracks
 
 A Rails app that tracks and displays plays from KEXP’s The Morning Show, with features to backfill historical data, refresh today’s set, and view Top 40 tracks by time period.
 
@@ -18,10 +18,10 @@ A Rails app that tracks and displays plays from KEXP’s The Morning Show, with 
 	•	Bootstrap-style SCSS (custom styling + responsive tables)
 
 🚀 Getting Started
-git clone https://github.com/TomoyamiP/jitm-tracks.git
-cd jitm-tracks
-bundle install
-bin/rails db:create db:migrate
+git clone https://github.com/TomoyamiP/jitm-tracks.git<br>
+cd jitm-tracks<br>
+bundle install<br>
+bin/rails db:create db:migrate<br>
 bin/rails s
 
 💡 Why This Project?
