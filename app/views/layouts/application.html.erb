@@ -13,7 +13,7 @@
   <body>
     <!-- Top nav -->
     <nav class="site-nav">
-      <%= link_to "About", "#", id: "about-link", class: "nav-link" %>
+      <%= link_to "About*", "#", id: "about-link", class: "nav-link" %>
     </nav>
     <!-- Main content -->
     <%= yield %>
@@ -22,12 +22,13 @@
       <div class="modal-overlay" data-close-modal></div>
       <div class="modal-dialog" role="document">
         <button class="modal-close" type="button" aria-label="Close" data-close-modal>&times;</button>
-        <h2 id="about-title">About This Project</h2>
+        <h2 id="about-title"><em>John in the Morning</em> Tracks</h2>
         <p>
-          This app pulls track plays for
+          This app pulls track plays from
           <strong class="morning-show">The Morning Show</strong> on
           <strong><a href="https://www.kexp.org/" target="_blank" rel="noopener" class="kexp-link">KEXP</a></strong>,
-          stores them locally, and shows recent plays plus Top lists by time period.
+          archiving every play since January 2015 in a database,
+          and showing recent plays plus Top lists by time period.
         </p>
         <p>
           I’m from Seattle, and KEXP has always been part of home for me.
