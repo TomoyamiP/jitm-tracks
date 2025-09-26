@@ -1,33 +1,33 @@
-# jitm-tracks
-John in The Morning Tracks
+# JITMtracks
 
-A Rails app that tracks and displays plays from KEXP’s The Morning Show, with features to backfill historical data, refresh today’s set, and view Top 40 tracks by time period.
+JITMtracks is a Rails app that archives and displays playlists from **The Morning Show** on [KEXP](https://www.kexp.org/).  
+It pulls track plays directly from the KEXP API, storing them locally so you can browse recent plays, explore historical data, and view Top 40 charts across different time ranges.
 
-✨ Features
-	•	Recent Plays — See what was just played on The Morning Show
-	•	Top 40 Charts — View the most-played tracks over the last 30 days, 90 days, 1 year, or all-time
-	•	Backfill — Import historical plays going back to 2010 (via KEXP’s public API)
-	•	Refresh Today — Instantly pull in the latest Morning Show plays
-	•	Turbo Frames — Fast updates when switching between Top 40 periods
-	•	About Modal — Info about the project and personal story
+The database currently covers **every Morning Show play since January 2015**, giving you over a decade of music history to explore.
 
-🛠️ Tech Stack
-	•	Ruby on Rails 7 (Hotwire + Turbo)
-	•	PostgreSQL (for storing plays + shows)
-	•	HTTParty (API integration with KEXP)
-	•	Bootstrap-style SCSS (custom styling + responsive tables)
+---
 
-🚀 Getting Started
-git clone https://github.com/TomoyamiP/jitm-tracks.git<br>
-cd jitm-tracks<br>
-bundle install<br>
-bin/rails db:create db:migrate<br>
-bin/rails s
+## ✨ Features
+- **Recent Plays** – Live feed of what’s been played on The Morning Show  
+- **Top 40 Charts** – Switch between last 30 days, 90 days, 1 year, or all-time  
+- **Backfill & Refresh** – Import historical plays or fetch the latest set with one click  
+- **Turbo-powered UI** – Smooth frame updates for fast navigation  
 
-💡 Why This Project?
+---
 
-I’m from Seattle, and KEXP was part of home for me. The Morning Show was my daily soundtrack during commutes, and every Friday the Mint Royale “Show Me” track was something I looked forward to. Building this project is both a technical challenge and a way to archive that connection.
+## 🛠️ Tech Stack
+- Ruby on Rails 7  
+- PostgreSQL  
+- Turbo / Hotwire  
+- SCSS for styling  
+- Deployed on Heroku  
 
-🔗 Links
-	•	🎧 KEXP.org
-	•	💻 My GitHub
+---
+
+## 📅 Data Coverage
+- Morning Show plays starting from **January 2015 → present**  
+
+---
+
+## 👤 Author
+Built by [Paul Miyamoto](https://github.com/TomoyamiP) as both a technical challenge and a way to preserve the music that shaped his daily life in Seattle.
