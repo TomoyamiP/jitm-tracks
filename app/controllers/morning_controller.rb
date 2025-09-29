@@ -2,19 +2,31 @@
 class MorningController < ApplicationController
   def index
     @period = params[:period].to_s
-    since   = since_for(@period)
+    @years  = years_list
 
-    # Top 40 for selected period
-    @top_songs = Play.top_songs_for("The Morning Show", since: since, limit: 40)
+    rel, label = plays_relation_for(@period)
 
-    # Count for header
-    @period_play_count = period_play_count(since)
+    # Top 40 + header bits
+    @top_songs = rel
+      .group(:artist, :song)
+      .order(Arel.sql("COUNT(*) DESC"))
+      .limit(40)
+      .count
+      .map { |(artist, song), count| [artist, song, count] }
+
+    @period_play_count = rel.count
+    @period_label      = label
 
     # Recent plays (dedup near-identicals within the same minute)
-    rel = Play.for_program("The Morning Show").within_show_window.order(played_at: :desc).limit(400)
+    recent_rel = Play
+      .for_program("The Morning Show")
+      .within_show_window
+      .order(played_at: :desc)
+      .limit(400)
+
     seen = {}
     filtered = []
-    rel.each do |p|
+    recent_rel.each do |p|
       minute_key = p.played_at&.in_time_zone('Pacific Time (US & Canada)')&.strftime('%Y-%m-%d %H:%M')
       key = [p.show_id, p.artist, p.song, minute_key]
       next if seen[key]
@@ -24,19 +36,34 @@ class MorningController < ApplicationController
     @plays = filtered.first(200)
   end
 
-  # Turbo-updated Top 40 frame
+  # Turbo-updated Top 40 frame (buttons and table live in the partial)
   def top
     period = params[:period].to_s
-    since  = since_for(period)
+    years  = years_list
 
-    top_songs = Play.top_songs_for("The Morning Show", since: since, limit: 40)
-    @period_play_count = period_play_count(since)
+    rel, label = plays_relation_for(period)
 
-    # Always return a <turbo-frame id="top40"> so Turbo can replace it
-    html = view_context.turbo_frame_tag("top40") do
-      render_to_string(partial: "top40", locals: { top_songs: top_songs, period: period })
-    end
-    render html: html.html_safe
+    top_songs = rel
+      .group(:artist, :song)
+      .order(Arel.sql("COUNT(*) DESC"))
+      .limit(40)
+      .count
+      .map { |(artist, song), count| [artist, song, count] }
+
+    period_play_count = rel.count
+
+    render html: view_context.turbo_frame_tag("top40") {
+      render_to_string(
+        partial: "top40",
+        locals: {
+          top_songs:         top_songs,
+          period:            period,
+          period_label:      label,
+          period_play_count: period_play_count,
+          years:             years
+        }
+      )
+    }.html_safe
   end
 
   def refresh
@@ -61,19 +88,37 @@ class MorningController < ApplicationController
 
   private
 
-  def since_for(period)
-    case period
-    when "90", "90d" then 90.days.ago
-    when "365", "1y" then 1.year.ago
-    when "all"       then nil
-    else                  30.days.ago
-    end
+  # Build the year list based on your data; fallback to 2015..current year.
+  def years_list
+    min_year   = Play.for_program("The Morning Show").minimum(:played_at)&.year
+    start_year = [min_year || 2015, 2015].max
+    (start_year..Time.zone.now.year).to_a.reverse
   end
 
-  # Count plays for the selected window (no 3h show window restriction)
-  def period_play_count(since)
-    rel = Play.for_program("The Morning Show")
-    rel = rel.where("plays.played_at >= ?", since) if since.present?
-    rel.count
+  # Returns [relation, label] for the selected period string.
+  # Supported:
+  #   nil/"30" → last 30 days
+  #   "90"     → last 90 days
+  #   "365"    → last 365 days
+  #   "all"    → all time
+  #   "year-YYYY" → that calendar year
+  def plays_relation_for(period)
+    base = Play.for_program("The Morning Show")
+
+    case period
+    when "90", "90d"
+      [base.where("plays.played_at >= ?", 90.days.ago), "Last 90 Days"]
+    when "365", "1y"
+      [base.where("plays.played_at >= ?", 1.year.ago), "Last Year"]
+    when /\Ayear-(\d{4})\z/
+      y      = Regexp.last_match(1).to_i
+      start  = Time.zone.local(y, 1, 1).beginning_of_day
+      finish = Time.zone.local(y, 12, 31).end_of_day
+      [base.where(played_at: start..finish), y.to_s]
+    when "all"
+      [base, "All Time"]
+    else
+      [base.where("plays.played_at >= ?", 30.days.ago), "Last 30 Days"]
+    end
   end
 end

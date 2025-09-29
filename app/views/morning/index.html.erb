@@ -15,11 +15,17 @@
   <% if alert %>
     <p class="alert"><%= alert %></p>
   <% end %>
-  <!-- 🎵 Top 40 -->
+  <!-- Top 40 (Turbo frame; includes its own header + period buttons) -->
   <%= turbo_frame_tag "top40" do %>
-    <%= render partial: "top40", locals: { top_songs: @top_songs, period: @period } %>
+    <%= render partial: "top40", locals: {
+          top_songs:         @top_songs,
+          period:            @period,
+          period_label:      @period_label,
+          period_play_count: @period_play_count,
+          years:             @years
+        } %>
   <% end %>
-  <!-- 🎵 Recent plays -->
+  <!-- Recent plays -->
   <h2>Recent Plays</h2>
   <div class="scroll-box">
     <% if @plays.present? %>

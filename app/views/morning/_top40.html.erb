@@ -1,30 +1,57 @@
-<!-- app/views/morning/_top40.html.erb -->
+<%# app/views/morning/_top40.html.erb %>
+<% period            ||= params[:period].to_s %>
+<% period_label      ||= begin
+     case period
+     when "90","90d"  then "Last 90 Days"
+     when "365","1y"  then "Last Year"
+     when /\Ayear-(\d{4})\z/ then Regexp.last_match(1)
+     when "all"       then "All Time"
+     else                   "Last 30 Days"
+     end
+   end %>
+<% period_play_count ||= 0 %>
+<% years             ||= [] %>
 <div class="top40-header">
   <h2>
     Top 40
-    (<%= case period
-        when "90"  then "Last 90 Days"
-        when "365" then "Last Year"
-        when "all" then "All Time"
-        else             "Last 30 Days"
-        end %>)
-    • <%= @period_play_count %> plays
+    <span class="sub">
+      (<%= period_label %> • <%= number_with_delimiter(period_play_count.to_i) %> plays)
+    </span>
   </h2>
   <div class="period-buttons">
-    <%= link_to "30 Days", morning_top_path(period: "30"),
-          class: "btn #{'active' if period.blank? || period == '30'}",
-          data:  { turbo_frame: "top40" } %>
-    <%= link_to "90 Days", morning_top_path(period: "90"),
-          class: "btn #{'active' if period == '90'}",
-          data:  { turbo_frame: "top40" } %>
-    <%= link_to "1 Year",  morning_top_path(period: "365"),
-          class: "btn #{'active' if period == '365'}",
-          data:  { turbo_frame: "top40" } %>
-    <%= link_to "All",     morning_top_path(period: "all"),
-          class: "btn #{'active' if period == 'all'}",
-          data:  { turbo_frame: "top40" } %>
+    <%= link_to "30 Days",
+          morning_top_path(period: "30"),
+          data: { turbo_frame: "top40" },
+          class: "btn #{'active' if period.blank? || period == '30'}" %>
+    <%= link_to "90 Days",
+          morning_top_path(period: "90"),
+          data: { turbo_frame: "top40" },
+          class: "btn #{'active' if %w[90 90d].include?(period)}" %>
+    <div class="dropdown">
+      <a href="#"
+         class="btn <%= 'active' if period&.start_with?('year-') %>"
+         onclick="return false;">Year ▾</a>
+      <div class="dropdown-content">
+        <% years.each do |y| %>
+          <%= link_to y.to_s,
+                morning_top_path(period: "year-#{y}"),
+                data: { turbo_frame: "top40" },
+                class: "dropdown-item" %>
+        <% end %>
+      </div>
+    </div>
+    <%= link_to "All Time",
+          morning_top_path(period: "all"),
+          data: { turbo_frame: "top40" },
+          class: "btn #{'active' if period == 'all'}" %>
   </div>
 </div>
+<%# 🔹 Warning note for low-data years %>
+<% if ["2022", "2024"].include?(period.to_s.sub("year-", "")) %>
+  <p class="data-note">
+    ⚠️ Data may be incomplete for this year because of limitations in the KEXP playlist API.
+  </p>
+<% end %>
 <div class="scroll-box">
   <% if top_songs.present? %>
     <table class="top-songs">
@@ -46,6 +73,6 @@
       </tbody>
     </table>
   <% else %>
-    <p>No Top 40 data available yet. Try importing plays first.</p>
+    <p>No Top 40 data available for this period.</p>
   <% end %>
 </div>
