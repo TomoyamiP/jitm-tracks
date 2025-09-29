@@ -209,3 +209,79 @@ nav {
   gap: 0.5rem;
   align-items: center;
 }
+
+/* ===== Top Nav (About | KEXP | GitHub) ===== */
+.site-nav {
+  display: flex;
+  justify-content: flex-end;   /* push links to the right */
+  align-items: center;
+  gap: 14px;
+  padding: 10px 14px;
+  background: #f5f5f5;
+}
+
+.site-nav .nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #333;
+  font-weight: 600;
+  text-decoration: none !important; /* kill underline */
+  margin-left: 15px;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.site-nav .nav-link:hover {
+  color: #DA0037;          /* red hover */
+  text-decoration: none;   /* never underline */
+  transform: scale(1.1);
+}
+
+/* ===== KEXP PNG logo ===== */
+.site-nav .nav-link img {
+  height: 36px;  /* a bit bigger so it balances GitHub SVG */
+  width: auto;
+  display: block;
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+.site-nav .nav-link:hover img {
+  transform: scale(1.15);
+  /* apply red tint filter */
+  filter: brightness(0) saturate(100%) invert(18%) sepia(87%)
+          saturate(5371%) hue-rotate(343deg) brightness(89%) contrast(101%);
+}
+
+/* ===== GitHub SVG icon ===== */
+.site-nav .nav-link svg {
+  height: 28px;  /* slightly smaller */
+  width: 28px;
+  fill: #333;    /* default gray */
+  transition: transform 0.2s ease, fill 0.2s ease;
+}
+.site-nav .nav-link:hover svg {
+  fill: #DA0037; /* red hover */
+  transform: scale(1.15);
+}
+
+/* Modal close (×) in top-right */
+.modal-dialog {
+  position: relative;
+}
+
+.modal-close {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  border: none;
+  background: none;
+  font-size: 1.75rem;
+  font-weight: bold;
+  color: #666;
+  cursor: pointer;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.modal-close:hover {
+  color: #DA0037;   /* your red */
+  transform: scale(1.15); /* subtle grow on hover */
+}
