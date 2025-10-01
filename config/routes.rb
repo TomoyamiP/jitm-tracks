@@ -18,5 +18,5 @@ Rails.application.routes.draw do
   end
 
   # Root
-  root "plays#index"
+  root "morning#index"
 end
