@@ -1,4 +1,3 @@
-# config/routes.rb
 Rails.application.routes.draw do
   # Plays
   resources :plays, only: [:index]
@@ -7,15 +6,17 @@ Rails.application.routes.draw do
   # Health check
   get "up" => "rails/health#show", as: :rails_health_check
 
-  # Morning (index + refresh + backfill + top)
+  # 🔹 Top-40 Turbo target
+  get "morning/top", to: "morning#top", as: :morning_top
+
+  # Morning (index + refresh + backfill)
   resources :morning, only: [:index] do
     collection do
-      get  :top          # => morning_top_path
       post :refresh
       post :backfill
     end
   end
 
-  # Root path → Morning#index
-  root "morning#index"
+  # Root
+  root "plays#index"
 end
