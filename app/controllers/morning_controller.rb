@@ -76,13 +76,15 @@ class MorningController < ApplicationController
     redirect_to morning_index_path, alert: "Refresh failed: #{e.class}: #{e.message}"
   end
 
-def backfill
-  days = (params[:days] || 30).to_i
-  BackfillMorningJob.perform_later(days: days)
-  redirect_to morning_index_path, notice: "Backfill job started for last #{days} days. Check logs for progress."
-rescue => e
-  redirect_to morning_index_path, alert: "Backfill failed: #{e.class}: #{e.message}"
-end
+  def backfill
+    days = (params[:days] || 30).to_i
+
+    # Queue the long-running import so the web request returns immediately.
+    BackfillMorningJob.perform_later(days: days)
+
+    redirect_to morning_index_path,
+                notice: "Backfill started for last #{days} days. Check logs for progress."
+  end
 
   private
 
