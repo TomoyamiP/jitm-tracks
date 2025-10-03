@@ -76,15 +76,13 @@ class MorningController < ApplicationController
     redirect_to morning_index_path, alert: "Refresh failed: #{e.class}: #{e.message}"
   end
 
-  def backfill
-    days   = (params[:days] || 30).to_i
-    since  = days.days.ago.beginning_of_day
-    client = KexpClient.new
-    imported = client.import_morning_since!(since)
-    redirect_to morning_index_path, notice: "Backfilled last #{days} days: imported #{imported} new play(s)."
-  rescue => e
-    redirect_to morning_index_path, alert: "Backfill failed: #{e.class}: #{e.message}"
-  end
+def backfill
+  days = (params[:days] || 30).to_i
+  BackfillMorningJob.perform_later(days: days)
+  redirect_to morning_index_path, notice: "Backfill job started for last #{days} days. Check logs for progress."
+rescue => e
+  redirect_to morning_index_path, alert: "Backfill failed: #{e.class}: #{e.message}"
+end
 
   private
 
