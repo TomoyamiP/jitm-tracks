@@ -1,0 +1,2 @@
+class BackfillStatus < ApplicationRecord
+end
