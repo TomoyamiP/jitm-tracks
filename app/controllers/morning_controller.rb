@@ -77,13 +77,13 @@ class MorningController < ApplicationController
   end
 
   def backfill
-    days = (params[:days] || 30).to_i
+    days      = (params[:days] || 30).to_i
+    simulate  = ActiveModel::Type::Boolean.new.cast(params[:simulate])
 
-    # Queue the long-running import so the web request returns immediately.
-    BackfillMorningJob.perform_later(days: days)
+    BackfillMorningJob.perform_later(days: days, simulate: simulate)
 
     redirect_to morning_index_path,
-                notice: "Backfill started for last #{days} days. Check logs for progress."
+                notice: "Backfill started for last #{days} days#{simulate ? ' (simulation)' : ''}. Check logs for progress."
   end
 
   private

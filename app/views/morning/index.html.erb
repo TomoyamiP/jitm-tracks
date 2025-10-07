@@ -6,8 +6,10 @@
   <div class="actions">
     <%= button_to "Refresh Today", refresh_morning_index_path,
           method: :post, class: "btn btn-refresh" %>
-    <%= button_to "Backfill Last 30 Days", backfill_morning_index_path,
-          method: :post, class: "btn btn-danger" %>
+    <%= button_to "Backfill Last 30 Days (Simulated)",
+      backfill_morning_index_path(simulate: true, days: 1),
+      method: :post,
+      class: "btn btn-danger" %>
   </div>
   <% if notice %>
     <p class="notice"><%= notice %></p>
