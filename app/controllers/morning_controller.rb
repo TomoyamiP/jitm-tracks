@@ -40,6 +40,7 @@ class MorningController < ApplicationController
 
   # Turbo-updated Top 40 frame (buttons and table live in the partial)
   def top
+    @backfill = BackfillStatus.order(started_at: :desc).first
     period = params[:period].to_s
     years  = years_list
 
