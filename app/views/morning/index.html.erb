@@ -5,13 +5,14 @@
   </div>
   <div class="actions">
     <%= button_to "Refresh Today",
-          refresh_morning_index_path,
-          method: :post,
-          class: "btn btn-refresh" %>
-    <%= button_to "Backfill Last 30 Days",
-          backfill_morning_index_path(days: 30),
-          method: :post,
-          class: "btn btn-danger" %>
+        refresh_morning_index_path,
+        method: :post,
+        class: "btn btn-refresh" %>
+    <%# Developer-only: keep the backfill route, but hide button from UI %>
+    <%# <%= button_to "Backfill Last 30 Days",
+        backfill_morning_index_path(days: 30),
+        method: :post,
+        class: "btn btn-danger" %> %>
   </div>
   <%# ——— Tiny backfill status line (smart show/hide) ——— %>
   <% if @last_backfill.present? %>
