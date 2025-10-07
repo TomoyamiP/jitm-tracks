@@ -13,23 +13,34 @@
           method: :post,
           class: "btn btn-danger" %>
   </div>
-  <%# ——— Tiny backfill status line ——— %>
-  <% if @last_backfill %>
-    <div class="job-status <%= @last_backfill.status %>">
-      <% icon = { "running"=>"⏳", "success"=>"✅", "failed"=>"⚠️" }[@last_backfill.status] %>
-      <span class="icon"><%= icon %></span>
-      <span class="label">Backfill:</span>
-      <span class="state"><%= @last_backfill.status.capitalize %></span>
-      <% if @last_backfill.imported_count.to_i > 0 %>
-        <span class="count">(imported <%= @last_backfill.imported_count %>)</span>
-      <% end %>
-      <span class="time">
-        •
-        <%= @last_backfill.finished_at ?
-              "finished #{time_ago_in_words(@last_backfill.finished_at)} ago" :
-              "started #{time_ago_in_words(@last_backfill.started_at)} ago" %>
-      </span>
-    </div>
+  <%# ——— Tiny backfill status line (smart show/hide) ——— %>
+  <% if @last_backfill.present? %>
+    <% age_time = @last_backfill.finished_at || @last_backfill.started_at %>
+    <% recent   = age_time && age_time > 6.hours.ago %>
+    <% show_it  = @last_backfill.status != "success" || recent %>
+    <% if show_it %>
+      <div class="job-status <%= @last_backfill.status %>">
+        <% icon = { "running"=>"⏳", "success"=>"✅", "failed"=>"⚠️" }[@last_backfill.status] %>
+        <span class="icon"><%= icon %></span>
+        <span class="label">Last update:</span>
+        <% if @last_backfill.status == "running" %>
+          <span class="state">Running</span>
+          <span class="time">• started <%= time_ago_in_words(age_time) %> ago</span>
+        <% elsif @last_backfill.status == "success" %>
+          <span class="state">Success</span>
+          <% if @last_backfill.imported_count.to_i > 0 %>
+            <span class="count">• imported <%= @last_backfill.imported_count %></span>
+          <% end %>
+          <span class="time">• finished <%= time_ago_in_words(age_time) %> ago</span>
+        <% else %>
+          <span class="state">Failed</span>
+          <span class="time">• <%= time_ago_in_words(age_time) %> ago</span>
+          <% if @last_backfill.error_message.present? %>
+            <span class="err">• <%= @last_backfill.error_message %></span>
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
   <% end %>
   <% if notice %>
     <p class="notice"><%= notice %></p>
