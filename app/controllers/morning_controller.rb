@@ -40,33 +40,41 @@ class MorningController < ApplicationController
 
   # Turbo-updated Top 40 frame (buttons and table live in the partial)
   def top
+    # Banner status (used in the view)
     @last_backfill = BackfillStatus.order(started_at: :desc).first
-    period = params[:period].to_s
-    years  = years_list
 
-    rel, label = plays_relation_for(period)
+    # Inputs
+    @period = (params[:period].presence || 30).to_s
+    @years  = years_list
 
-    top_songs = rel
+    # Build the relation + label your helper returns
+    rel, @period_label = plays_relation_for(@period)
+
+    # Data for the "Top 40" section
+    @top_songs = rel
       .group(:artist, :song)
       .order(Arel.sql("COUNT(*) DESC"))
       .limit(40)
       .count
       .map { |(artist, song), count| [artist, song, count] }
 
-    period_play_count = rel.count
+    @period_play_count = rel.count
 
-    render html: view_context.turbo_frame_tag("top40") {
-      render_to_string(
-        partial: "top40",
-        locals: {
-          top_songs:         top_songs,
-          period:            period,
-          period_label:      label,
-          period_play_count: period_play_count,
-          years:             years
-        }
-      )
-    }.html_safe
+    # Data for the "Recent Plays" table and header "Showing N plays"
+    @plays = rel.order(played_at: :desc).limit(200)
+
+    # Return just the frame when the request targets it; otherwise render full page
+    if turbo_frame_request?
+      render partial: "top40", locals: {
+        top_songs:         @top_songs,
+        period:            @period,
+        period_label:      @period_label,
+        period_play_count: @period_play_count,
+        years:             @years
+      }
+    else
+      render :top
+    end
   end
 
   def refresh
