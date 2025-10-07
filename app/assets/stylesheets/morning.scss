@@ -349,3 +349,17 @@ html.no-scroll, body.no-scroll { overflow: hidden; } /* only if you’re togglin
 /* Hooks if you want to style separately */
 .top40-box { }
 .recent-plays-box { }
+
+/* Action buttons (Refresh / Backfill) */
+.actions .btn {
+  font-size: 1.1rem;           /* larger text */
+  padding: 0.6rem 1.2rem;      /* more breathing room */
+  border-radius: 8px;          /* rounded corners */
+  font-weight: 600;            /* bold like nav links */
+  transition: transform 0.15s ease, background-color 0.2s ease;
+}
+
+.actions .btn:hover {
+  transform: scale(1.05);      /* subtle grow on hover */
+  background-color: rgba(255,255,255,0.08); /* matches faint borders */
+}
