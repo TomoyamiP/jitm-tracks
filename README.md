@@ -10,7 +10,8 @@ The database currently covers **every Morning Show play since January 2015**, gi
 ## ✨ Features
 - **Recent Plays** – Live feed of what’s been played on The Morning Show  
 - **Top 40 Charts** – Switch between last 30 days, 90 days, 1 year, or all-time  
-- **Backfill & Refresh** – Import historical plays or fetch the latest set with one click  
+- **Daily Auto-Update** – Scheduler keeps today’s playlist fresh automatically  
+- **Non-blocking Refresh** – Refresh Today runs in the background (no timeouts)  
 - **Turbo-powered UI** – Smooth frame updates for fast navigation  
 
 ---
@@ -20,7 +21,7 @@ The database currently covers **every Morning Show play since January 2015**, gi
 - PostgreSQL  
 - Turbo / Hotwire  
 - SCSS for styling  
-- Deployed on Heroku  
+- Deployed on Heroku (Eco dyno + Postgres essential-0 + free Scheduler)  
 
 ---
 
@@ -31,3 +32,12 @@ The database currently covers **every Morning Show play since January 2015**, gi
 
 ## 👤 Author
 Built by [Paul Miyamoto](https://github.com/TomoyamiP) as both a technical challenge and a way to preserve the music that shaped his daily life in Seattle.
+
+---
+
+## 🧰 Developer Utilities
+These are optional commands for maintenance and recovery.  
+
+- **Manual 30-day backfill (rarely needed):**
+  ```bash
+  heroku run -a jitm-tracks rails runner 'BackfillMorningJob.perform_now(days: 30)'
