@@ -334,3 +334,9 @@ nav {
 
 /* Optional: make the page still scrollable when modal is closed */
 html.no-scroll, body.no-scroll { overflow: hidden; } /* only if you’re toggling this in JS */
+
+.top40-box {
+  max-height: 320px;   /* tweak until it shows ~16 rows */
+  overflow-y: auto;
+  border: 1px solid #333; /* optional, to make it look like a panel */
+}
