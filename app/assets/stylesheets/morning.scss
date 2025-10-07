@@ -301,3 +301,36 @@ nav {
 .job-status.running { color: #995700; }
 .job-status.success { color: #2e7d32; }
 .job-status.failed  { color: #b00020; }
+
+/* Modal layout: center and allow content to scroll within the dialog */
+.modal {
+  position: fixed;
+  inset: 0;                 /* top/right/bottom/left: 0 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;            /* breathing room at edges */
+  z-index: 1000;
+}
+
+.modal.hidden { display: none; }
+
+.modal-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+}
+
+.modal-dialog {
+  position: relative;
+  background: #111;         /* or your card bg */
+  border-radius: 12px;
+  padding: 1.25rem 1.25rem 1.5rem;
+  width: min(760px, 92vw);
+  max-height: 80vh;         /* 👈 key: keep dialog within viewport */
+  overflow: auto;           /* 👈 key: let the dialog itself scroll */
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+/* Optional: make the page still scrollable when modal is closed */
+html.no-scroll, body.no-scroll { overflow: hidden; } /* only if you’re toggling this in JS */
