@@ -65,13 +65,19 @@ class MorningController < ApplicationController
 
     # Return just the frame when the request targets it; otherwise render full page
     if turbo_frame_request?
-      render partial: "top40", locals: {
-        top_songs:         @top_songs,
-        period:            @period,
-        period_label:      @period_label,
-        period_play_count: @period_play_count,
-        years:             @years
-      }
+      html = view_context.turbo_frame_tag("top40") do
+        render_to_string(
+          partial: "top40",
+          locals: {
+            top_songs:         @top_songs,
+            period:            @period,
+            period_label:      @period_label,
+            period_play_count: @period_play_count,
+            years:             @years
+          }
+        )
+      end
+      render html: html.html_safe
     else
       render :top
     end
