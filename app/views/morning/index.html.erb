@@ -56,3 +56,6 @@
     <% end %>
   </div>
 </div>
+<%= button_to "Simulate Backfill (1 day)",
+      backfill_morning_index_path(days: 1, simulate: true),
+      method: :post, class: "btn btn-warning" %>
