@@ -4,13 +4,33 @@
     Showing <%= @plays.size %> plays • Last updated <%= Time.current.strftime('%Y-%m-%d %H:%M') %>
   </div>
   <div class="actions">
-    <%= button_to "Refresh Today", refresh_morning_index_path,
-          method: :post, class: "btn btn-refresh" %>
-    <%= button_to "Backfill Last 30 Days (Simulated)",
-      backfill_morning_index_path(simulate: true, days: 1),
-      method: :post,
-      class: "btn btn-danger" %>
+    <%= button_to "Refresh Today",
+          refresh_morning_index_path,
+          method: :post,
+          class: "btn btn-refresh" %>
+    <%= button_to "Backfill Last 30 Days",
+          backfill_morning_index_path(days: 30),
+          method: :post,
+          class: "btn btn-danger" %>
   </div>
+  <%# ——— Tiny backfill status line ——— %>
+  <% if @last_backfill %>
+    <div class="job-status <%= @last_backfill.status %>">
+      <% icon = { "running"=>"⏳", "success"=>"✅", "failed"=>"⚠️" }[@last_backfill.status] %>
+      <span class="icon"><%= icon %></span>
+      <span class="label">Backfill:</span>
+      <span class="state"><%= @last_backfill.status.capitalize %></span>
+      <% if @last_backfill.imported_count.to_i > 0 %>
+        <span class="count">(imported <%= @last_backfill.imported_count %>)</span>
+      <% end %>
+      <span class="time">
+        •
+        <%= @last_backfill.finished_at ?
+              "finished #{time_ago_in_words(@last_backfill.finished_at)} ago" :
+              "started #{time_ago_in_words(@last_backfill.started_at)} ago" %>
+      </span>
+    </div>
+  <% end %>
   <% if notice %>
     <p class="notice"><%= notice %></p>
   <% end %>
@@ -56,6 +76,3 @@
     <% end %>
   </div>
 </div>
-<%= button_to "Simulate Backfill (1 day)",
-      backfill_morning_index_path(days: 1, simulate: true),
-      method: :post, class: "btn btn-warning" %>

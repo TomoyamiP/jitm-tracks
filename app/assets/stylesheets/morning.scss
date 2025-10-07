@@ -285,3 +285,19 @@ nav {
   color: #DA0037;   /* your red */
   transform: scale(1.15); /* subtle grow on hover */
 }
+
+.job-status {
+  margin: 0.25rem 0 0.75rem;
+  font-size: 0.9rem;
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  color: #666;
+
+  .label { font-weight: 600; color: #444; }
+  .state { font-weight: 700; }
+  .time  { opacity: 0.9; }
+}
+.job-status.running { color: #995700; }
+.job-status.success { color: #2e7d32; }
+.job-status.failed  { color: #b00020; }

@@ -4,6 +4,8 @@ class MorningController < ApplicationController
     @period = params[:period].to_s
     @years  = years_list
 
+    @last_backfill = BackfillStatus.order(created_at: :desc).first
+
     rel, label = plays_relation_for(@period)
 
     # Top 40 + header bits
@@ -77,13 +79,9 @@ class MorningController < ApplicationController
   end
 
   def backfill
-    days      = (params[:days] || 30).to_i
-    simulate  = ActiveModel::Type::Boolean.new.cast(params[:simulate])
-
-    BackfillMorningJob.perform_later(days: days, simulate: simulate)
-
-    redirect_to morning_index_path,
-                notice: "Backfill started for last #{days} days#{simulate ? ' (simulation)' : ''}. Check logs for progress."
+    days = (params[:days] || 30).to_i
+    BackfillMorningJob.perform_later(days: days)
+    redirect_to morning_index_path, notice: "Backfill started for last #{days} days. Check logs for progress."
   end
 
   private
