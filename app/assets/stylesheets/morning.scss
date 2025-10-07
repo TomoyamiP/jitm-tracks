@@ -353,6 +353,5 @@ html.no-scroll, body.no-scroll { overflow: hidden; } /* only if you’re togglin
 /* Shared button hover style */
 .actions .btn:hover,
 .period-buttons .btn:hover {
-  background-color: rgba(100, 200, 255, 0.12); /* soft bluish tint */
   transform: scale(1.05);
 }
