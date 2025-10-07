@@ -135,6 +135,7 @@ GEM
     jbuilder (2.14.1)
       actionview (>= 7.0.0)
       activesupport (>= 7.0.0)
+    json (2.15.0)
     logger (1.7.0)
     loofah (2.24.1)
       crass (~> 1.0.2)
@@ -237,6 +238,8 @@ GEM
     rdoc (6.14.2)
       erb
       psych (>= 4.0.0)
+    redis-client (0.26.1)
+      connection_pool
     regexp_parser (2.11.3)
     reline (0.6.2)
       io-console (~> 0.5)
@@ -257,6 +260,12 @@ GEM
       rexml (~> 3.2, >= 3.2.5)
       rubyzip (>= 1.2.2, < 4.0)
       websocket (~> 1.0)
+    sidekiq (8.0.7)
+      connection_pool (>= 2.5.0)
+      json (>= 2.9.0)
+      logger (>= 1.6.2)
+      rack (>= 3.1.0)
+      redis-client (>= 0.23.2)
     sprockets (4.2.2)
       concurrent-ruby (~> 1.0)
       logger
@@ -315,6 +324,7 @@ DEPENDENCIES
   rails (~> 7.1.5, >= 7.1.5.2)
   sassc-rails
   selenium-webdriver
+  sidekiq
   sprockets-rails
   stimulus-rails
   turbo-rails

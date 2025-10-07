@@ -69,13 +69,12 @@ class MorningController < ApplicationController
   end
 
   def refresh
-    client  = KexpClient.new
-    before  = Play.count
-    client.import_morning_today!
-    imported = Play.count - before
-    redirect_to morning_index_path, notice: "Morning show updated (#{imported} new plays)."
+    # Kick off a quick background fetch for today (doesn't block the web request)
+    BackfillMorningJob.perform_later(days: 1)
+
+    redirect_to morning_index_path, notice: "Refreshing in the background… check back in about a minute."
   rescue => e
-    redirect_to morning_index_path, alert: "Refresh failed: #{e.class}: #{e.message}"
+    redirect_to morning_index_path, alert: "Refresh started, but reported: #{e.class}: #{e.message}"
   end
 
   def backfill

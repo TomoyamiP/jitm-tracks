@@ -70,3 +70,4 @@ gem "httparty", "~> 0.23.1"
 
 gem "ostruct"
 gem "sassc-rails"
+gem "sidekiq"
