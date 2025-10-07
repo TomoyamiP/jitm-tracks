@@ -335,8 +335,17 @@ nav {
 /* Optional: make the page still scrollable when modal is closed */
 html.no-scroll, body.no-scroll { overflow: hidden; } /* only if you’re toggling this in JS */
 
-.top40-box {
-  max-height: 320px;   /* tweak until it shows ~16 rows */
+/* Shared scrollable box style */
+.scroll-box {
+  height: 320px;             /* fixed height for consistency */
   overflow-y: auto;
-  border: 1px solid #333; /* optional, to make it look like a panel */
+  margin-top: 0.5rem;
+  padding-right: 0.25rem;
+  border: 1px solid rgba(255,255,255,0.08); /* faint, almost invisible */
+  border-radius: 8px;        /* rounded corners */
+  background-color: rgba(255,255,255,0.02); /* subtle lift from background */
 }
+
+/* Hooks if you want to style separately */
+.top40-box { }
+.recent-plays-box { }
