@@ -41,3 +41,28 @@ These are optional commands for maintenance and recovery.
 - **Manual 30-day backfill (rarely needed):**
   ```bash
   heroku run -a jitm-tracks rails runner 'BackfillMorningJob.perform_now(days: 30)'
+
+---
+
+## 🚀 Deployment Notes
+
+- **Heroku App**: `jitm-tracks`
+  - Eco dyno (web), Postgres essential-0, free Scheduler
+- **Database**:
+  - Migrated with `rails db:migrate`
+  - Imported local snapshot once via `pg:reset + pg:push`
+- **Assets/UI**:
+  - Fixed asset pipeline (application.scss + manifest)
+  - Root = Morning page, Turbo frame for Top 40
+  - UI polish: nav links, press logo, hover/scale effects, modal close button, warning banners
+- **Background Jobs**:
+  - `BackfillMorningJob` + `BackfillStatus` model
+  - One-off dynos: run with `rails runner 'BackfillMorningJob.perform_now(days: X)'`
+  - Refresh button updated to run jobs in background (no H12 timeouts)
+  - Status banner shows last job (⏳ running / ✅ success / ⚠️ failed)
+- **Automation**:
+  - Heroku Scheduler runs daily:
+    ```bash
+    rails runner 'BackfillMorningJob.perform_now(days: 1)'
+    ```
+  - Auto-updates the database + banner without downtime
