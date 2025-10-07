@@ -326,7 +326,7 @@ nav {
   background: #111;         /* or your card bg */
   border-radius: 12px;
   padding: 1.25rem 1.25rem 1.5rem;
-  width: min(760px, 92vw);
+  width: calc(min(760px, 92vw));
   max-height: 80vh;         /* 👈 key: keep dialog within viewport */
   overflow: auto;           /* 👈 key: let the dialog itself scroll */
   box-shadow: 0 10px 30px rgba(0,0,0,0.5);
